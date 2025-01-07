@@ -1,0 +1,54 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_DATABASE_URL")
+}
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  password    String
+  createdAt   DateTime @default(now())
+  Review Review[]
+}
+model Review {
+  id            String      @id @default(uuid())
+  userId        String
+  companyName   String
+  role          String
+  responsibilities String
+  location      String
+  feedback      String
+  reviewType    ReviewType  // Enum: GOOD, NOT_GOOD_NOT_BAD, BAD
+  rating        Int       @default(1) @db.Integer // 1 to 5 stars
+  hoursPerWeek  Int
+  salaryPerWeek String
+  currency      Currency
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@map("reviews") // Map model to "reviews" table
+  
+}
+
+enum Currency {
+  INR
+  USD
+  EUR
+  GBP
+  AUD
+  CAD
+  SGD
+  AED
+  JPY
+  CNY
+}
+enum ReviewType {
+  GOOD
+  NOT_GOOD_NOT_BAD
+  BAD
+}
